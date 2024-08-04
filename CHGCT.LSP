@@ -1,0 +1,43 @@
+; This program is to change radius of selected circle
+; Written by C.S.Koo (T.Y.Lin  E036)  1988-5-13
+;
+(defun c:chgct()
+(setq index "")
+(setq index (getstring "\nChange (T)ext , (R)adius or (B)oth :"))
+ (if (or (equal index "t") (equal index "T"))
+    (progn (setq tsize (getreal "\nText Height :"))
+           (setq ctype "other") (setq ttype "TEXT")
+    )
+ )
+ (if (or (equal index "r") (equal index "R"))
+    (progn (setq csize (getreal "\nNew Radius :"))
+           (setq ttype "other") (setq ctype "CIRCLE")
+    )
+ )
+ (if (or (equal index "b") (equal index "B"))
+     (progn
+       (setq tsize (getreal "\nText Height :")) (setq ttype "TEXT")
+       (setq csize (getreal "\nNew Radius :")) (setq ctype "CIRCLE")
+     )
+ )
+(setq set (ssget))
+(setq nset (sslength set) n 0)
+ (repeat nset
+   (setq ent (ssname set n))
+   (setq data (entget ent))
+   (setq type (cdr (assoc 0 data)))
+   (if (or (equal type ctype) (equal type ttype))
+     (progn
+       (if (equal type ttype) (setq size tsize))
+       (if (equal type ctype) (setq size csize))
+       (setq orad (assoc 40 data))
+       (setq nr (cons 40 size))
+       (setq data (subst nr orad data))
+       (entmod data)
+     )
+   )
+   (setq n (+ n 1))
+ )
+ (command "redraw")
+)
+
